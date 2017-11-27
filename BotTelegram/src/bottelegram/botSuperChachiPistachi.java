@@ -20,9 +20,157 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
  * @author Fernando
  */
 
-public class botSuperChachiPistachi extends TelegramLongPollingBot {
+public class botSuperChachiPistachi extends TelegramLongPollingBot {    
     @Override
-    public void onUpdateReceived(Update update) {
+    public void onUpdateReceived(Update update){
+        //The update has a message with text?
+        if(update.hasMessage() && update.getMessage().hasText()){
+            //if the message is correct we get the text and the chatId
+            String message_text = update.getMessage().getText();
+            long chat_id = update.getMessage().getChatId();
+            if(message_text.equals("/start")){
+                //User Sent /start
+                SendMessage message = new SendMessage() //create the msg
+                        .setChatId(chat_id)
+                        .setText("Hola juapo!");
+                try {
+                    execute(message); 
+                } catch (TelegramApiException e){
+                    e.printStackTrace();
+                }
+            } else if (message_text.equals("/pic")) {
+                SendPhoto msg = new SendPhoto()
+                        .setChatId(chat_id)
+                        .setPhoto("AgADBAADjqwxGwNz0FDMfg-mzd2563AvJhoABMHEo_tQebPB44YAAgI")
+                        .setCaption("ñeñeñe");
+                   try{
+                        sendPhoto(msg);
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
+            } else if(message_text.equals("/markup")){
+                SendMessage message = new SendMessage()
+                        .setChatId(chat_id)
+                        .setText("here is your keyboard");
+                //replykeyboard object
+                ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+                
+                List<KeyboardRow> keyboard = new ArrayList<>();
+                //KB row
+                KeyboardRow row = new KeyboardRow();
+                // Set each button
+                
+                row.add("Pene");
+                row.add("pito");
+                row.add("tranca");
+                
+                keyboard.add(row);
+                
+                row = new KeyboardRow();
+                
+                row.add("caca");
+                row.add("troncho");
+                row.add("Truño Morruño");
+                
+                keyboard.add(row);
+                
+                keyboardMarkup.setKeyboard(keyboard);
+                message.setReplyMarkup(keyboardMarkup);
+                
+                try {
+                    execute(message); 
+                } catch (TelegramApiException e){
+                    e.printStackTrace();
+                }
+            
+            } else if (message_text.equals("Pene") || message_text.equals("pito")
+                    || message_text.equals("caca") || message_text.equals("tranca")
+                    || message_text.equals("troncho") || message_text.equals("Truño Morruño")) {
+                SendMessage message = new SendMessage()
+                        .setChatId(chat_id)
+                        .setText("Wow! Soo rude man! ");
+                try {
+                    execute(message); 
+                } catch (TelegramApiException e){
+                    e.printStackTrace();
+                }
+            
+            }else if(message_text.equals("/hide")) {
+                SendMessage msg = new SendMessage()
+                        .setChatId(chat_id)
+                        .setText("keyboard hidden");
+                ReplyKeyboardRemove keyboardMarkup = new ReplyKeyboardRemove();
+                msg.setReplyMarkup(keyboardMarkup);
+                try {
+                    execute(msg); // Call method to send the photo
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                 }
+            } else{
+                //unknown command
+                
+                // Set variables
+            String user_first_name = update.getMessage().getChat().getFirstName();
+            String user_last_name = update.getMessage().getChat().getLastName();
+            long user_id = update.getMessage().getChat().getId();
+            String answer = EmojiParser.parseToUnicode("A palabras necias pollazo en la boca :eggplant: ");
+            SendMessage message = new SendMessage() // Create a message object object
+                    .setChatId(chat_id)
+                    .setText(answer);
+            log(user_first_name, user_last_name, Long.toString(user_id), message_text, answer);
+            try {
+                execute(message); // Sending our message object to user
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+            }
+
+        } else if(update.hasMessage() && update.getMessage().hasPhoto()){
+            long chat_id = update.getMessage().getChatId();
+            
+            // Array with photo objects with different sizes
+            // We will get the biggest photo from that array
+            List<PhotoSize> photos = update.getMessage().getPhoto();
+            
+            // Know file_id
+            String f_id = photos.stream()
+                    .sorted(Comparator.comparing(PhotoSize::getFileSize).reversed())
+                    .findFirst()
+                    .orElse(null).getFileId();
+            
+            // Know photo height
+            int f_height = photos.stream()
+                    .sorted(Comparator.comparing(PhotoSize::getFileSize).reversed())
+                    .findFirst()
+                    .orElse(null).getHeight();
+            
+            // Know photo width
+            
+            int f_width = photos.stream()
+                    .sorted(Comparator.comparing(PhotoSize::getFileSize).reversed())
+                    .findFirst()
+                    .orElse(null).getWidth();
+            
+            //Set photo caption
+            String caption = "file_id: " + f_id + "\nwidth: " + Integer.toString(f_width) + "\nheight: " + Integer.toString(f_height);
+            SendPhoto msg = new SendPhoto()
+                    .setChatId(chat_id)
+                    .setPhoto(f_id)
+                    .setCaption(caption);
+        
+            try{
+                sendPhoto(msg);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+        
+        }
+    }
+    
+    
+    
+    
+    /*public void onUpdateReceived(Update update) {
         // We check if the update has a message and the message has text
         if (update.hasMessage() && update.getMessage().hasText()) {
             // Set variables
@@ -43,7 +191,7 @@ public class botSuperChachiPistachi extends TelegramLongPollingBot {
             }
         }
     }
-    
+    */
     @Override
     public String getBotUsername(){
         
